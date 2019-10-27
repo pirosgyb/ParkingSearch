@@ -34,7 +34,12 @@ class AddParkingFragment : Fragment() {
 
     private fun init() {
         viewModel = ViewModelProviders.of(this).get(AddParkingViewModel::class.java)
-        toolbarView?.bind(ToolbarModel(type = ToolbarType.NAVIGATE_BACK))
+        toolbarView?.bind(
+            ToolbarModel(
+                type = ToolbarType.NAVIGATE_BACK,
+                title = "Add new parking spot"
+            )
+        )
     }
 
 }

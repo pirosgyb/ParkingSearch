@@ -74,4 +74,19 @@
         app:layout_constraintStart_toStartOf="@id/searchIconWrapper"
         app:layout_constraintTop_toTopOf="@id/searchIconWrapper" />
 
+    <TextView
+        android:id="@+id/titleTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:textAlignment="viewEnd"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/backIconWrapper"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Title" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

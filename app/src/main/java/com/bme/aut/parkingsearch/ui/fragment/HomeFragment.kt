@@ -38,12 +38,8 @@ class HomeFragment : Fragment() {
         viewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
         toolbarView?.bind(ToolbarModel(type = ToolbarType.SEARCH))
 
-        addButton.setOnClickListener {
+        addParkingFAB.setOnClickListener {
             NavigationManager.navigateToAddParking(findNavController())
-        }
-
-        detailsButton.setOnClickListener {
-            NavigationManager.navigateToDetails(findNavController())
         }
     }
 

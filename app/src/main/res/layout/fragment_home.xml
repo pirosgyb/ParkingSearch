@@ -25,20 +25,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/addButton"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addParkingFAB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ADD new"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-
-    <Button
-        android:id="@+id/detailsButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Details"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="15dp"
+        android:backgroundTint="@color/colorPrimary"
+        android:foreground="@drawable/ripple_light"
+        android:src="@drawable/ic_add_black_24dp"
+        android:tint="@color/white"
+        android:tintMode="src_atop"
+        app:elevation="6dp"
+        app:fabSize="normal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

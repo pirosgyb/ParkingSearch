@@ -34,7 +34,7 @@ class ParkingDetailsFragment : Fragment() {
 
     private fun init() {
         viewModel = ViewModelProviders.of(this).get(ParkingDetailsViewModel::class.java)
-        toolbarView?.bind(ToolbarModel(type = ToolbarType.NAVIGATE_BACK))
+        toolbarView?.bind(ToolbarModel(type = ToolbarType.NAVIGATE_BACK, title = "Details"))
     }
 
 }

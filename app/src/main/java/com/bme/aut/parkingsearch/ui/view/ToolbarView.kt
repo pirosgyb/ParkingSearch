@@ -23,13 +23,15 @@ class ToolbarView @JvmOverloads constructor(
         View.inflate(context, R.layout.view_toolbar, this)
     }
 
-    fun bind(toolbarModel: ToolbarModel) {
+    fun bind(model: ToolbarModel) {
 
-        when (toolbarModel.type) {
+        when (model.type) {
             ToolbarType.NAVIGATE_BACK -> {
                 searchEditText.gone()
                 searchIconImageView.gone()
 
+                titleTextView.visible()
+                titleTextView.text = model.title
                 backIconImageView.visible()
                 backIconWrapper.setOnClickListener {
                     (context as MainActivity).onBackPressed()
