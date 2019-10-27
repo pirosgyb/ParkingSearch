@@ -6,8 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import com.bme.aut.parkingsearch.R
+import com.bme.aut.parkingsearch.enum.ToolbarType
+import com.bme.aut.parkingsearch.model.ToolbarModel
+import com.bme.aut.parkingsearch.util.NavigationManager
 import com.bme.aut.parkingsearch.viewModel.HomeViewModel
+import kotlinx.android.synthetic.main.fragment_home.*
 
 class HomeFragment : Fragment() {
 
@@ -26,8 +31,20 @@ class HomeFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        init()
+    }
+
+    private fun init() {
         viewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
-        // TODO: Use the ViewModel
+        toolbarView?.bind(ToolbarModel(type = ToolbarType.SEARCH))
+
+        addButton.setOnClickListener {
+            NavigationManager.navigateToAddParking(findNavController())
+        }
+
+        detailsButton.setOnClickListener {
+            NavigationManager.navigateToDetails(findNavController())
+        }
     }
 
 }

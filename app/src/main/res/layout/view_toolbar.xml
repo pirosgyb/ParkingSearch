@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="@color/colorPrimary"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/backIconWrapper"
+        android:layout_width="60dp"
+        android:layout_height="0dp"
+        android:foreground="@drawable/ripple_light"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/backIconImageView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="13dp"
+        android:src="@drawable/ic_arrow_back_black_24dp"
+        android:tint="@color/white"
+        android:tintMode="src_atop"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/backIconWrapper"
+        app:layout_constraintEnd_toEndOf="@id/backIconWrapper"
+        app:layout_constraintStart_toStartOf="@id/backIconWrapper"
+        app:layout_constraintTop_toTopOf="@id/backIconWrapper"
+        tools:visibility="visible" />
+
+    <EditText
+        android:id="@+id/searchEditText"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="15dp"
+        android:backgroundTint="@color/white"
+        android:hint="@string/searchToolbarText"
+        android:inputType="textPostalAddress"
+        android:lines="1"
+        android:maxLines="1"
+        android:textColor="@color/white"
+        android:textColorHint="@color/lightGrey"
+        android:textCursorDrawable="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/searchIconWrapper"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/searchIconWrapper"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:foreground="@drawable/ripple_light"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/searchIconImageView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="13dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="13dp"
+        android:src="@drawable/ic_search_black_24dp"
+        android:tint="@color/white"
+        android:tintMode="src_atop"
+        app:layout_constraintBottom_toBottomOf="@id/searchIconWrapper"
+        app:layout_constraintEnd_toEndOf="@id/searchIconWrapper"
+        app:layout_constraintStart_toStartOf="@id/searchIconWrapper"
+        app:layout_constraintTop_toTopOf="@id/searchIconWrapper" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

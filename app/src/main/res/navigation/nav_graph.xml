@@ -19,7 +19,7 @@
     </fragment>
     <fragment
         android:id="@+id/addParkingFragment"
-        android:name="com.bme.aut.parkingsearch.ui.fragment.AddParking"
+        android:name="com.bme.aut.parkingsearch.ui.fragment.AddParkingFragment"
         android:label="fragment_add_parking"
         tools:layout="@layout/fragment_add_parking" />
     <fragment

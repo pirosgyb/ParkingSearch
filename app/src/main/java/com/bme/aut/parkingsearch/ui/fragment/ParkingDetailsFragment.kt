@@ -7,7 +7,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.bme.aut.parkingsearch.R
+import com.bme.aut.parkingsearch.enum.ToolbarType
+import com.bme.aut.parkingsearch.model.ToolbarModel
 import com.bme.aut.parkingsearch.viewModel.ParkingDetailsViewModel
+import kotlinx.android.synthetic.main.fragment_add_parking.*
 
 class ParkingDetailsFragment : Fragment() {
 
@@ -26,8 +29,12 @@ class ParkingDetailsFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        init()
+    }
+
+    private fun init() {
         viewModel = ViewModelProviders.of(this).get(ParkingDetailsViewModel::class.java)
-        // TODO: Use the ViewModel
+        toolbarView?.bind(ToolbarModel(type = ToolbarType.NAVIGATE_BACK))
     }
 
 }
