@@ -3,6 +3,7 @@
     package="com.bme.aut.parkingsearch">
 
     <application
+        android:name=".ParkingSearchApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"

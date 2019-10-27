@@ -17,19 +17,19 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/nameTextView"
+        android:id="@+id/addressTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
-        android:text="@string/newParkingSpotNameText"
+        android:text="@string/newParkingSpoAddressText"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbarView" />
 
     <TextView
-        android:id="@+id/nameEditText"
+        android:id="@+id/addressEditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="18dp"
@@ -39,7 +39,7 @@
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/nameTextView" />
+        app:layout_constraintTop_toBottomOf="@id/addressTextView" />
 
     <TextView
         android:id="@+id/photosTextView"
@@ -51,6 +51,6 @@
         android:text="@string/newParkingPhotosText"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/nameEditText" />
+        app:layout_constraintTop_toBottomOf="@id/addressEditText" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

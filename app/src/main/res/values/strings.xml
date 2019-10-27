@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">ParkingSearch</string>
     <string name="searchToolbarText">Search</string>
-    <string name="newParkingSpotNameText">Name:</string>
+    <string name="newParkingSpoAddressText">Address:</string>
     <string name="newParkingPhotosText">Photo:</string>
     <string name="cameraButtonText">Take a picture</string>
 </resources>
