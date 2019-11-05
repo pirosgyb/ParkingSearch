@@ -20,6 +20,7 @@ import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_home.view.*
 import org.greenrobot.eventbus.Subscribe
 
+
 class HomeFragment : BaseFragment() {
 
     companion object {
@@ -101,15 +102,24 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun initMap() {
-        MapsInitializer.initialize(context)
         mapView?.getMapAsync { googleMap ->
             this.googleMap = googleMap
+            MapsInitializer.initialize(context)
             requestData()
+            googleMap?.uiSettings?.isMyLocationButtonEnabled = false
+            context.toast("Map ready!")
         }
     }
 
     private fun requestData() {
-        //TODO request data
+        /*  viewModel.getParkingSpots{ parkingSpots, error ->
+              if(parkingSpots != null){
+                  context.toast("Got parkingSpots!")
+                  //viewModel.createParkingSpotMarker
+              } else {
+                  context.toast("Some error occure on map.")
+              }
+          }*/
     }
 
 
