@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.bme.aut.parkingsearch.R
 import com.bme.aut.parkingsearch.enum.ToolbarType
@@ -12,7 +11,7 @@ import com.bme.aut.parkingsearch.model.ToolbarModel
 import com.bme.aut.parkingsearch.viewModel.ParkingDetailsViewModel
 import kotlinx.android.synthetic.main.fragment_add_parking.*
 
-class ParkingDetailsFragment : Fragment() {
+class ParkingDetailsFragment : BaseFragment() {
 
     companion object {
         fun newInstance() = ParkingDetailsFragment()
