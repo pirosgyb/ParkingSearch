@@ -15,10 +15,7 @@ import com.bme.aut.parkingsearch.enum.ToolbarType
 import com.bme.aut.parkingsearch.events.SearchClickedEvent
 import com.bme.aut.parkingsearch.model.ToolbarModel
 import com.bme.aut.parkingsearch.ui.activity.MainActivity
-import com.bme.aut.parkingsearch.util.NavigationManager
-import com.bme.aut.parkingsearch.util.areLocationsEqual
-import com.bme.aut.parkingsearch.util.toLatLng
-import com.bme.aut.parkingsearch.util.toast
+import com.bme.aut.parkingsearch.util.*
 import com.bme.aut.parkingsearch.viewModel.HomeViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -26,7 +23,6 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.MapsInitializer
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.android.synthetic.main.fragment_home.*
@@ -216,8 +212,16 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun placeMarkerOnMap(position: LatLng) {
-        val markerOptions = MarkerOptions().position(position)
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+        val markerOptions = MarkerOptions()
+            .position(position)
+            .title("Current position")
+            .icon(
+                context.getMarkerIconFromDrawable(
+                    R.drawable.ic_my_location_black_24dp,
+                    R.color.blue
+                )
+            )
+
         googleMap?.addMarker(markerOptions)
     }
 

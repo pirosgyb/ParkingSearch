@@ -2,10 +2,16 @@ package com.bme.aut.parkingsearch.util
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.PorterDuff
 import android.location.Location
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.core.content.ContextCompat
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 
 fun Context?.toast(text: String) {
@@ -49,4 +55,31 @@ fun View?.hideSoftKeyboard() {
             )
         }
     }
+}
+
+fun Context?.getMarkerIconFromDrawable(drawableId: Int, colorId: Int): BitmapDescriptor? {
+    this?.let { context_ ->
+        val canvas = Canvas()
+        val drawable = ContextCompat.getDrawable(context_, drawableId)
+
+        drawable?.let {
+            drawable.setTint(ContextCompat.getColor(context_, colorId))
+            drawable.setTintMode(PorterDuff.Mode.SRC_ATOP)
+
+            val bitmap = Bitmap.createBitmap(
+                drawable.intrinsicWidth,
+                drawable.intrinsicHeight,
+                Bitmap.Config.ARGB_8888
+            )
+            canvas.setBitmap(bitmap)
+            drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
+            drawable.draw(canvas)
+            return BitmapDescriptorFactory.fromBitmap(bitmap)
+        }
+
+        return null
+
+    }
+    return null
+
 }
