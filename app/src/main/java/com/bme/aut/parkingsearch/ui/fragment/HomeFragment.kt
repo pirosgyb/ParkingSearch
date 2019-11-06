@@ -173,8 +173,14 @@ class HomeFragment : BaseFragment() {
             if (location != null) {
                 viewModel.lastLocation = location
 
+                val shouldAnimate =
+                    if (viewModel.lastLocation == null) true else !areLocationsEqual(
+                        viewModel.lastLocation,
+                        location
+                    )
+
                 updateMap(
-                    shouldAnimate = !areLocationsEqual(viewModel.lastLocation, location),
+                    shouldAnimate = shouldAnimate,
                     currentPosition = viewModel.lastLocation,
                     showingPosition = viewModel.lastLocation.toLatLng()
                 )
@@ -228,6 +234,12 @@ class HomeFragment : BaseFragment() {
     private fun getPositionFrom(address: String): LatLng? {
         val geocoder = Geocoder(context)
         val addresses = geocoder.getFromLocationName(address, 1)
+
+        if (addresses == null) {
+            context.toast("Geocode api not working properly.\nTry again later.")
+            return null
+        }
+
         if (addresses.isNotEmpty()) {
             return LatLng(
                 addresses[0].latitude,
