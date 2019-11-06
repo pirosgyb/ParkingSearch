@@ -8,7 +8,6 @@ import com.google.android.gms.maps.model.LatLng
 
 class HomeViewModel : ViewModel() {
     var lastLocation: Location? = null
-    Í
     var searchedPosition: LatLng? = null
 
     fun getParkingSpots(completion: (parkingSpots: ArrayList<ParkingSpot>?, error: String?) -> Unit) {
