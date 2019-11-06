@@ -115,6 +115,14 @@ class HomeFragment : BaseFragment() {
             NavigationManager.navigateToAddParking(viewModel.searchedAddress, findNavController())
         }
 
+        currentPositionFAB.setOnClickListener {
+            updateMap(
+                shouldAnimate = true,
+                currentPosition = viewModel.lastLocation,
+                showingPosition = viewModel.lastLocation.toLatLng()
+            )
+        }
+
         fusedLocationClient =
             LocationServices.getFusedLocationProviderClient(activity as MainActivity)
 
