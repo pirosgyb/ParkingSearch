@@ -1,6 +1,8 @@
 package com.bme.aut.parkingsearch.ui.fragment
 
 import android.content.pm.PackageManager
+import android.location.Geocoder
+import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +16,7 @@ import com.bme.aut.parkingsearch.events.SearchClickedEvent
 import com.bme.aut.parkingsearch.model.ToolbarModel
 import com.bme.aut.parkingsearch.ui.activity.MainActivity
 import com.bme.aut.parkingsearch.util.NavigationManager
+import com.bme.aut.parkingsearch.util.areLocationsEqual
 import com.bme.aut.parkingsearch.util.toLatLng
 import com.bme.aut.parkingsearch.util.toast
 import com.bme.aut.parkingsearch.viewModel.HomeViewModel
@@ -172,36 +175,44 @@ class HomeFragment : BaseFragment() {
     private fun updateLastLocation() {
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
             if (location != null) {
-                if ((viewModel.lastLocation?.longitude != location.longitude ||
-                            viewModel.lastLocation?.latitude != location.latitude)
-                ) {
-                    viewModel.lastLocation = location
+                viewModel.lastLocation = location
 
-                    val currentLatLng = viewModel.lastLocation?.toLatLng()
-                    currentLatLng?.let {
-                        placeMarkerOnMap(it)
-                        googleMap?.animateCamera(
-                            CameraUpdateFactory.newLatLngZoom(
-                                it,
-                                14f
-                            )
-                        )
-                    }
-                } else {
-                    viewModel.lastLocation?.let {
-                        placeMarkerOnMap(it.toLatLng())
-                        googleMap?.moveCamera(
-                            CameraUpdateFactory.newLatLngZoom(
-                                it.toLatLng(),
-                                14f
-                            )
-                        )
-                    }
-                }
+                updateMap(
+                    shouldAnimate = !areLocationsEqual(viewModel.lastLocation, location),
+                    currentPosition = viewModel.lastLocation,
+                    showingPosition = viewModel.lastLocation.toLatLng()
+                )
 
             }
-
         }
+    }
+
+    private fun updateMap(
+        shouldAnimate: Boolean,
+        currentPosition: Location?,
+        showingPosition: LatLng?
+    ) {
+
+        currentPosition?.toLatLng()?.let { placeMarkerOnMap(it) }
+
+        showingPosition?.let {
+            if (shouldAnimate) {
+                googleMap?.animateCamera(
+                    CameraUpdateFactory.newLatLngZoom(
+                        showingPosition,
+                        14f
+                    )
+                )
+            } else {
+                googleMap?.moveCamera(
+                    CameraUpdateFactory.newLatLngZoom(
+                        showingPosition,
+                        14f
+                    )
+                )
+            }
+        }
+
     }
 
     private fun placeMarkerOnMap(position: LatLng) {
@@ -210,10 +221,24 @@ class HomeFragment : BaseFragment() {
         googleMap?.addMarker(markerOptions)
     }
 
+    private fun getPositionFrom(address: String): LatLng? {
+        val geocoder = Geocoder(context)
+        val addresses = geocoder.getFromLocationName(address, 1)
+        if (addresses.isNotEmpty()) {
+            return LatLng(
+                addresses[0].latitude,
+                addresses[0].longitude
+            )
+        } else {
+            context.toast("Not found this address: $address")
+            return null
+        }
+    }
+
     @Subscribe
     fun onSearchClickedEvent(event: SearchClickedEvent) {
-        context.toast(event.address)
-        //TODO: move to event.address
+        viewModel.searchedPosition = getPositionFrom(event.address)
+        updateMap(true, viewModel.lastLocation, viewModel.searchedPosition)
     }
 
 }

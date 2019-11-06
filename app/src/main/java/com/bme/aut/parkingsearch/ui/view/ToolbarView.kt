@@ -9,6 +9,7 @@ import com.bme.aut.parkingsearch.events.SearchClickedEvent
 import com.bme.aut.parkingsearch.model.ToolbarModel
 import com.bme.aut.parkingsearch.ui.activity.MainActivity
 import com.bme.aut.parkingsearch.util.gone
+import com.bme.aut.parkingsearch.util.hideSoftKeyboard
 import com.bme.aut.parkingsearch.util.visible
 import kotlinx.android.synthetic.main.view_toolbar.view.*
 import org.greenrobot.eventbus.EventBus
@@ -41,6 +42,8 @@ class ToolbarView @JvmOverloads constructor(
                 searchIconWrapper?.setOnClickListener {
                     EventBus.getDefault()
                         .post(SearchClickedEvent(address = searchEditText.text.toString()))
+                    this.hideSoftKeyboard()
+                    (context as MainActivity).currentFocus?.clearFocus()
                 }
             }
         }

@@ -4,9 +4,12 @@ import android.location.Location
 import androidx.lifecycle.ViewModel
 import com.bme.aut.parkingsearch.model.ParkingSpot
 import com.bme.aut.parkingsearch.repository.Repository
+import com.google.android.gms.maps.model.LatLng
 
 class HomeViewModel : ViewModel() {
     var lastLocation: Location? = null
+    Í
+    var searchedPosition: LatLng? = null
 
     fun getParkingSpots(completion: (parkingSpots: ArrayList<ParkingSpot>?, error: String?) -> Unit) {
 
