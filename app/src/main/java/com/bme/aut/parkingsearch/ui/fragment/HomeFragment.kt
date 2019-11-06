@@ -1,6 +1,7 @@
 package com.bme.aut.parkingsearch.ui.fragment
 
 import android.content.pm.PackageManager
+import android.location.Address
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
@@ -11,6 +12,7 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.bme.aut.parkingsearch.R
+import com.bme.aut.parkingsearch.enum.MarkerType
 import com.bme.aut.parkingsearch.enum.ToolbarType
 import com.bme.aut.parkingsearch.events.SearchClickedEvent
 import com.bme.aut.parkingsearch.model.ToolbarModel
@@ -23,6 +25,8 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.MapsInitializer
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.android.synthetic.main.fragment_home.*
@@ -33,7 +37,7 @@ import org.greenrobot.eventbus.Subscribe
 class HomeFragment : BaseFragment() {
 
     companion object {
-        fun newInstance() = HomeFragment()
+        const val ARG_KEY = "HOME_FRAGMENT_ARG_KEY"
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
     }
 
@@ -108,7 +112,7 @@ class HomeFragment : BaseFragment() {
         initMap()
 
         addParkingFAB.setOnClickListener {
-            NavigationManager.navigateToAddParking(findNavController())
+            NavigationManager.navigateToAddParking(viewModel.searchedPosition, findNavController())
         }
 
         fusedLocationClient =
@@ -195,7 +199,17 @@ class HomeFragment : BaseFragment() {
         showingPosition: LatLng?
     ) {
 
-        currentPosition?.toLatLng()?.let { placeMarkerOnMap(it) }
+        googleMap?.clear()
+
+        currentPosition?.toLatLng()
+            ?.let { placeMarkerOnMap(it, "Current position", MarkerType.CURRENT_POSITION) }
+        viewModel.searchedPosition?.let {
+            placeMarkerOnMap(
+                it.getLatLng(),
+                it.getAddressLine(0),
+                MarkerType.SEARCHED_PLACE
+            )
+        }
 
         showingPosition?.let {
             if (shouldAnimate) {
@@ -217,21 +231,32 @@ class HomeFragment : BaseFragment() {
 
     }
 
-    private fun placeMarkerOnMap(position: LatLng) {
-        val markerOptions = MarkerOptions()
-            .position(position)
-            .title("Current position")
-            .icon(
+    private fun placeMarkerOnMap(position: LatLng, markerName: String, markerType: MarkerType) {
+
+        val icon: BitmapDescriptor? = when (markerType) {
+            MarkerType.CURRENT_POSITION ->
                 context.getMarkerIconFromDrawable(
                     R.drawable.ic_my_location_black_24dp,
                     R.color.blue
                 )
-            )
+            MarkerType.SEARCHED_PLACE ->
+                BitmapDescriptorFactory.defaultMarker()
+            MarkerType.PARKING_SPOT ->
+                context.getMarkerIconFromDrawable(
+                    R.drawable.ic_parking_spot_icon,
+                    R.color.green
+                )
+        }
+
+        val markerOptions = MarkerOptions()
+            .position(position)
+            .title(markerName)
+            .icon(icon)
 
         googleMap?.addMarker(markerOptions)
     }
 
-    private fun getPositionFrom(address: String): LatLng? {
+    private fun getPositionFrom(address: String): Address? {
         val geocoder = Geocoder(context)
         val addresses = geocoder.getFromLocationName(address, 1)
 
@@ -240,21 +265,18 @@ class HomeFragment : BaseFragment() {
             return null
         }
 
-        if (addresses.isNotEmpty()) {
-            return LatLng(
-                addresses[0].latitude,
-                addresses[0].longitude
-            )
+        return if (addresses.isNotEmpty()) {
+            addresses[0]
         } else {
             context.toast("Not found this address: $address")
-            return null
+            null
         }
     }
 
     @Subscribe
     fun onSearchClickedEvent(event: SearchClickedEvent) {
         viewModel.searchedPosition = getPositionFrom(event.address)
-        updateMap(true, viewModel.lastLocation, viewModel.searchedPosition)
+        updateMap(true, viewModel.lastLocation, viewModel.searchedPosition?.getLatLng())
     }
 
 }

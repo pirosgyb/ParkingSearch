@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.fragment_add_parking.*
 class ParkingDetailsFragment : BaseFragment() {
 
     companion object {
-        fun newInstance() = ParkingDetailsFragment()
+        const val ARG_KEY = "PARKING_DETAILS_ARG_KEY"
     }
 
     private lateinit var viewModel: ParkingDetailsViewModel

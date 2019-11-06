@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.lifecycle.ViewModelProviders
 import com.bme.aut.parkingsearch.R
 import com.bme.aut.parkingsearch.enum.ToolbarType
@@ -14,7 +15,7 @@ import kotlinx.android.synthetic.main.fragment_add_parking.*
 class AddParkingFragment : BaseFragment() {
 
     companion object {
-        fun newInstance() = AddParkingFragment()
+        const val ARG_KEY = "ADD_PARKING_ARG_KEY"
     }
 
     private lateinit var viewModel: AddParkingViewModel
@@ -39,6 +40,8 @@ class AddParkingFragment : BaseFragment() {
                 title = "Add new parking spot"
             )
         )
+        viewModel.address = arguments?.getParcelable(ARG_KEY)
+        addressEditText?.setText(viewModel.address?.getAddressLine(0), TextView.BufferType.EDITABLE)
     }
 
 }

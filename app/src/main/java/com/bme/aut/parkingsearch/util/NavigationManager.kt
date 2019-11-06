@@ -1,12 +1,17 @@
 package com.bme.aut.parkingsearch.util
 
+import android.location.Address
+import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import com.bme.aut.parkingsearch.R
+import com.bme.aut.parkingsearch.ui.fragment.AddParkingFragment
 
 object NavigationManager {
 
-    fun navigateToAddParking(navController: NavController) {
+    fun navigateToAddParking(address: Address?, navController: NavController) {
+        val bundle = bundleOf(AddParkingFragment.ARG_KEY to address)
+
         val transitions = NavOptions.Builder()
             .setEnterAnim(R.anim.enter_from_right)
             .setExitAnim(R.anim.exit_to_left)
@@ -14,7 +19,7 @@ object NavigationManager {
             .setPopExitAnim(R.anim.exit_to_right)
             .build()
 
-        navController.navigate(R.id.addParkingFragment, null, transitions)
+        navController.navigate(R.id.addParkingFragment, bundle, transitions)
     }
 
     fun navigateToDetails(navController: NavController) {

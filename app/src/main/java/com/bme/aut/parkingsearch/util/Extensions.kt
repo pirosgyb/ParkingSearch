@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.PorterDuff
+import android.location.Address
 import android.location.Location
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -81,5 +82,11 @@ fun Context?.getMarkerIconFromDrawable(drawableId: Int, colorId: Int): BitmapDes
 
     }
     return null
+}
 
+fun Address.getLatLng(): LatLng {
+    return LatLng(
+        this.latitude,
+        this.longitude
+    )
 }
