@@ -8,7 +8,7 @@ import com.bme.aut.parkingsearch.repository.Repository
 
 class HomeViewModel : ViewModel() {
     var lastLocation: Location? = null
-    var searchedPosition: Address? = null
+    var searchedAddress: Address? = null
 
     fun getParkingSpots(completion: (parkingSpots: ArrayList<ParkingSpot>?, error: String?) -> Unit) {
 

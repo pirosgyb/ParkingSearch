@@ -112,7 +112,7 @@ class HomeFragment : BaseFragment() {
         initMap()
 
         addParkingFAB.setOnClickListener {
-            NavigationManager.navigateToAddParking(viewModel.searchedPosition, findNavController())
+            NavigationManager.navigateToAddParking(viewModel.searchedAddress, findNavController())
         }
 
         fusedLocationClient =
@@ -183,10 +183,17 @@ class HomeFragment : BaseFragment() {
                         location
                     )
 
+                var showingPosition = viewModel.lastLocation.toLatLng()
+
+                viewModel.searchedAddress?.let {
+                    showingPosition = it.getLatLng()
+                }
+
+
                 updateMap(
                     shouldAnimate = shouldAnimate,
                     currentPosition = viewModel.lastLocation,
-                    showingPosition = viewModel.lastLocation.toLatLng()
+                    showingPosition = showingPosition
                 )
 
             }
@@ -203,7 +210,7 @@ class HomeFragment : BaseFragment() {
 
         currentPosition?.toLatLng()
             ?.let { placeMarkerOnMap(it, "Current position", MarkerType.CURRENT_POSITION) }
-        viewModel.searchedPosition?.let {
+        viewModel.searchedAddress?.let {
             placeMarkerOnMap(
                 it.getLatLng(),
                 it.getAddressLine(0),
@@ -275,8 +282,8 @@ class HomeFragment : BaseFragment() {
 
     @Subscribe
     fun onSearchClickedEvent(event: SearchClickedEvent) {
-        viewModel.searchedPosition = getPositionFrom(event.address)
-        updateMap(true, viewModel.lastLocation, viewModel.searchedPosition?.getLatLng())
+        viewModel.searchedAddress = getPositionFrom(event.address)
+        updateMap(true, viewModel.lastLocation, viewModel.searchedAddress?.getLatLng())
     }
 
 }
