@@ -1,10 +1,12 @@
 package com.bme.aut.parkingsearch.viewModel
 
+import android.location.Location
 import androidx.lifecycle.ViewModel
 import com.bme.aut.parkingsearch.model.ParkingSpot
 import com.bme.aut.parkingsearch.repository.Repository
 
 class HomeViewModel : ViewModel() {
+    var lastLocation: Location? = null
 
     fun getParkingSpots(completion: (parkingSpots: ArrayList<ParkingSpot>?, error: String?) -> Unit) {
 
