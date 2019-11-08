@@ -4,6 +4,8 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+apply plugin: "androidx.navigation.safeargs"
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.1"
@@ -45,4 +47,13 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-gson:2.3.0"
     implementation "com.squareup.okhttp3:logging-interceptor:3.9.1"
     implementation "com.google.code.gson:gson:2.8.5"
+
+    // for maps
+    implementation "com.google.android.gms:play-services-maps:17.0.0"
+    implementation 'com.google.android.gms:play-services-location:17.0.0'
+    implementation 'com.google.android.libraries.places:places-compat:2.0.0'
+
+    // for event communication
+    implementation 'org.greenrobot:eventbus:3.1.1'
+
 }
