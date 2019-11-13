@@ -56,4 +56,10 @@ dependencies {
     // for event communication
     implementation 'org.greenrobot:eventbus:3.1.1'
 
+    //for database
+    implementation 'com.google.firebase:firebase-database:19.2.0'
+
+    //for uploading photos
+    implementation 'com.google.firebase:firebase-storage:19.1.0'
+
 }
