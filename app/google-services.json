@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "227932880241",
-    "firebase_url": "https://parkingsearch-f2e14.firebaseio.com",
-    "project_id": "parkingsearch-f2e14",
-    "storage_bucket": "parkingsearch-f2e14.appspot.com"
+    "project_number": "250866254275",
+    "firebase_url": "https://parking-db4c7.firebaseio.com",
+    "project_id": "parking-db4c7",
+    "storage_bucket": "parking-db4c7.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:227932880241:android:35716c838b582b17810ad0",
+        "mobilesdk_app_id": "1:250866254275:android:ec7e1a6fbad6cfcc8d7d76",
         "android_client_info": {
           "package_name": "com.bme.aut.parkingsearch"
         }
       },
       "oauth_client": [
         {
-          "client_id": "227932880241-9ro4ur1a189pk1t7dfo5162iaj1ua4vn.apps.googleusercontent.com",
+          "client_id": "250866254275-kjlm8moev4d7bnbirqp9tsuk8p0v700v.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.bme.aut.parkingsearch",
@@ -23,20 +23,20 @@
           }
         },
         {
-          "client_id": "227932880241-al2ur3deeor99n4vt6e487cav9fqqg66.apps.googleusercontent.com",
+          "client_id": "250866254275-n64upij1b73i9n1l2cu4m0u1j2hdjip3.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBmG7fzFHeqLNYgVQr9ZQAqR6P2Sl1c8QU"
+          "current_key": "AIzaSyAXHFDIend7KvXEm7vfBO4YuJyINl5Asao"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "227932880241-al2ur3deeor99n4vt6e487cav9fqqg66.apps.googleusercontent.com",
+              "client_id": "250866254275-n64upij1b73i9n1l2cu4m0u1j2hdjip3.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

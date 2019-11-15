@@ -3,6 +3,7 @@ package com.bme.aut.parkingsearch.ui.fragment
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
@@ -11,13 +12,20 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProviders
 import com.bme.aut.parkingsearch.R
 import com.bme.aut.parkingsearch.enum.ToolbarType
+import com.bme.aut.parkingsearch.model.ParkingSpot
 import com.bme.aut.parkingsearch.model.ToolbarModel
 import com.bme.aut.parkingsearch.repository.Repository
 import com.bme.aut.parkingsearch.viewModel.AddParkingViewModel
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.fragment_add_parking.*
+import java.io.ByteArrayOutputStream
+import java.net.URLEncoder
+import java.util.*
 
 class AddParkingFragment : BaseFragment() {
 
@@ -52,6 +60,63 @@ class AddParkingFragment : BaseFragment() {
         addressEditText?.setText(viewModel.address?.getAddressLine(0), TextView.BufferType.EDITABLE)
 
         cameraButton.setOnClickListener { attachClick() }
+        btnSend.setOnClickListener { sendClick() }
+    }
+
+    fun sendClick() {
+        if (imgAttach.visibility != View.VISIBLE) {
+            uploadPlace()
+        } else {
+            try {
+                uploadPlaceWithImg()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun uploadPlace(imageUrl: String? = null, address: String? = null) {
+        val key = FirebaseDatabase.getInstance().reference.child("places").push().key ?: return
+        val newPost = ParkingSpot(addressEditText.toString(), imageUrl)
+
+        FirebaseDatabase.getInstance().reference
+            .child("places")
+            .child(key)
+            .setValue(newPost)
+            .addOnCompleteListener {
+                Toast.makeText(activity, "Parking Spot added", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    fun uploadPlaceWithImg() {
+        Toast.makeText(activity,"yep2", Toast.LENGTH_LONG).show()
+        val bitmap: Bitmap = (imgAttach.drawable as BitmapDrawable).bitmap
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val imageInBytes = baos.toByteArray()
+
+        Toast.makeText(activity,"yep5", Toast.LENGTH_LONG).show()
+        val storageReference = FirebaseStorage.getInstance().reference
+        Toast.makeText(activity,"yep6", Toast.LENGTH_LONG).show()
+        val newImageName = URLEncoder.encode(UUID.randomUUID().toString(), "UTF-8") + ".jpg"
+        val newImageRef = storageReference.child("images/$newImageName")
+
+        newImageRef.putBytes(imageInBytes)
+            .addOnFailureListener { exception ->
+                Toast.makeText(activity, exception.message, Toast.LENGTH_SHORT).show()
+            }
+            .continueWithTask { task ->
+                if (!task.isSuccessful) {
+                    task.exception?.let { throw it }
+                    Toast.makeText(activity,"yep3", Toast.LENGTH_LONG).show()
+                }
+
+                newImageRef.downloadUrl
+            }
+            .addOnSuccessListener { downloadUri ->
+                uploadPlace(downloadUri.toString())
+                Toast.makeText(activity,"yep4", Toast.LENGTH_LONG).show()
+            }
     }
 
 //    fun getImageView(): ImageView {
