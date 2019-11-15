@@ -14,7 +14,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProviders
-import com.bme.aut.parkingsearch.R
 import com.bme.aut.parkingsearch.enum.ToolbarType
 import com.bme.aut.parkingsearch.model.ParkingSpot
 import com.bme.aut.parkingsearch.model.ToolbarModel
@@ -26,6 +25,10 @@ import kotlinx.android.synthetic.main.fragment_add_parking.*
 import java.io.ByteArrayOutputStream
 import java.net.URLEncoder
 import java.util.*
+//import sun.jvm.hotspot.utilities.IntArray
+import android.R
+import com.bme.aut.parkingsearch.ui.activity.MainActivity
+
 
 class AddParkingFragment : BaseFragment() {
 
@@ -40,7 +43,7 @@ class AddParkingFragment : BaseFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_add_parking, container, false)
+        return inflater.inflate(com.bme.aut.parkingsearch.R.layout.fragment_add_parking, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -84,11 +87,14 @@ class AddParkingFragment : BaseFragment() {
             .child(key)
             .setValue(newPost)
             .addOnCompleteListener {
+                (activity as MainActivity).hideProgressDialog()
                 Toast.makeText(activity, "Parking Spot added", Toast.LENGTH_SHORT).show()
             }
     }
 
     fun uploadPlaceWithImg() {
+        (activity as MainActivity).showProgressDialog()
+
         val bitmap: Bitmap = (imgAttach.drawable as BitmapDrawable).bitmap
         val baos = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)

@@ -40,7 +40,7 @@ open class BaseActivity : AppCompatActivity() {
         }
     }
 
-    protected fun hideProgressDialog() {
+    fun hideProgressDialog() {
         progressDialog?.let { dialog ->
             if (dialog.isShowing) {
                 dialog.dismiss()
