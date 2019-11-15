@@ -77,7 +77,7 @@ class AddParkingFragment : BaseFragment() {
 
     fun uploadPlace(imageUrl: String? = null, address: String? = null) {
         val key = FirebaseDatabase.getInstance().reference.child("places").push().key ?: return
-        val newPost = ParkingSpot(addressEditText.toString(), imageUrl)
+        val newPost = ParkingSpot(addressEditText.text.toString(), imageUrl)
 
         FirebaseDatabase.getInstance().reference
             .child("places")
@@ -89,15 +89,12 @@ class AddParkingFragment : BaseFragment() {
     }
 
     fun uploadPlaceWithImg() {
-        Toast.makeText(activity,"yep2", Toast.LENGTH_LONG).show()
         val bitmap: Bitmap = (imgAttach.drawable as BitmapDrawable).bitmap
         val baos = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
         val imageInBytes = baos.toByteArray()
 
-        Toast.makeText(activity,"yep5", Toast.LENGTH_LONG).show()
         val storageReference = FirebaseStorage.getInstance().reference
-        Toast.makeText(activity,"yep6", Toast.LENGTH_LONG).show()
         val newImageName = URLEncoder.encode(UUID.randomUUID().toString(), "UTF-8") + ".jpg"
         val newImageRef = storageReference.child("images/$newImageName")
 
@@ -108,14 +105,12 @@ class AddParkingFragment : BaseFragment() {
             .continueWithTask { task ->
                 if (!task.isSuccessful) {
                     task.exception?.let { throw it }
-                    Toast.makeText(activity,"yep3", Toast.LENGTH_LONG).show()
                 }
 
                 newImageRef.downloadUrl
             }
             .addOnSuccessListener { downloadUri ->
                 uploadPlace(downloadUri.toString())
-                Toast.makeText(activity,"yep4", Toast.LENGTH_LONG).show()
             }
     }
 
