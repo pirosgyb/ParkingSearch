@@ -9,15 +9,10 @@ import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
 import androidx.lifecycle.ViewModelProviders
 import com.bme.aut.parkingsearch.enum.ToolbarType
 import com.bme.aut.parkingsearch.model.ParkingSpot
 import com.bme.aut.parkingsearch.model.ToolbarModel
-import com.bme.aut.parkingsearch.repository.Repository
 import com.bme.aut.parkingsearch.viewModel.AddParkingViewModel
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -25,9 +20,14 @@ import kotlinx.android.synthetic.main.fragment_add_parking.*
 import java.io.ByteArrayOutputStream
 import java.net.URLEncoder
 import java.util.*
-//import sun.jvm.hotspot.utilities.IntArray
-import android.R
+import android.location.Address
+import android.location.Geocoder
+import android.widget.*
 import com.bme.aut.parkingsearch.ui.activity.MainActivity
+
+
+
+
 
 
 class AddParkingFragment : BaseFragment() {
@@ -78,18 +78,34 @@ class AddParkingFragment : BaseFragment() {
         }
     }
 
-    fun uploadPlace(imageUrl: String? = null, address: String? = null) {
-        val key = FirebaseDatabase.getInstance().reference.child("places").push().key ?: return
-        val newPost = ParkingSpot(addressEditText.text.toString(), imageUrl)
+    fun uploadPlace(imageUrl: String? = null) {
+        lateinit var listOfAddress:List<Address>
+        val geocoder = Geocoder(activity, Locale.ENGLISH)
+        val text = addressEditText.text.toString()
+        var isAddressType = false
 
-        FirebaseDatabase.getInstance().reference
-            .child("places")
-            .child(key)
-            .setValue(newPost)
-            .addOnCompleteListener {
-                (activity as MainActivity).hideProgressDialog()
-                Toast.makeText(activity, "Parking Spot added", Toast.LENGTH_SHORT).show()
-            }
+        try {
+            listOfAddress = geocoder.getFromLocationName(text,3)
+            addressEditText.setText(listOfAddress.get(0).featureName)
+            isAddressType = true
+
+        } catch (e:Exception){
+            Toast.makeText(activity,"Address is not found",Toast.LENGTH_LONG).show()
+        }
+
+        if(isAddressType) {
+            val key = FirebaseDatabase.getInstance().reference.child("places").push().key ?: return
+            val newPost = ParkingSpot(listOfAddress.get(0).featureName, imageUrl)
+
+            FirebaseDatabase.getInstance().reference
+                .child("places")
+                .child(key)
+                .setValue(newPost)
+                .addOnCompleteListener {
+                    (activity as MainActivity).hideProgressDialog()
+                    Toast.makeText(activity, "Parking Spot added", Toast.LENGTH_SHORT).show()
+                }
+        }
     }
 
     fun uploadPlaceWithImg() {
@@ -120,10 +136,6 @@ class AddParkingFragment : BaseFragment() {
             }
     }
 
-//    fun getImageView(): ImageView {
-//        return imgAttach
-//    }
-//
     private fun attachClick() {
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         startActivityForResult(takePictureIntent, REQUEST_CODE)
@@ -141,5 +153,4 @@ class AddParkingFragment : BaseFragment() {
             imgAttach.visibility = View.VISIBLE
         }
     }
-
 }
