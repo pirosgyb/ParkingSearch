@@ -53,25 +53,25 @@ object Repository {
     //Ilyen formában csináltam eddig az apihívásokat
     fun getParkingSpots(completion: (parkingSpots: ArrayList<ParkingSpot>?, error: String?) -> Unit) {
 
-        apiDefinition.getParkingSpots().enqueue(object : Callback<ArrayList<ParkingSpot>> {
-
-            override fun onResponse(
-                call: Call<ArrayList<ParkingSpot>>,
-                response: Response<ArrayList<ParkingSpot>>
-            ) {
-                if (response.code() == 200) {
-                    completion(response.body(), null)
-                } else {
-                    completion(null, "Error occur")
-                }
-
-            }
-
-            override fun onFailure(call: Call<ArrayList<ParkingSpot>>, t: Throwable) {
-                completion(null, "Error occur")
-            }
-
-        })
+//        apiDefinition.getParkingSpots().enqueue(object : Callback<ArrayList<ParkingSpot>> {
+//
+//            override fun onResponse(
+//                call: Call<ArrayList<ParkingSpot>>,
+//                response: Response<ArrayList<ParkingSpot>>
+//            ) {
+//                if (response.code() == 200) {
+//                    completion(response.body(), null)
+//                } else {
+//                    completion(null, "Error occur")
+//                }
+//
+//            }
+//
+//            override fun onFailure(call: Call<ArrayList<ParkingSpot>>, t: Throwable) {
+//                completion(null, "Error occur")
+//            }
+//
+//        })
     }
 
 }

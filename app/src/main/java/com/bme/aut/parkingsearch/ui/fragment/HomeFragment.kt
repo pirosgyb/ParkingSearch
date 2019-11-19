@@ -5,6 +5,7 @@ import android.location.Address
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,7 @@ import com.bme.aut.parkingsearch.R
 import com.bme.aut.parkingsearch.enum.MarkerType
 import com.bme.aut.parkingsearch.enum.ToolbarType
 import com.bme.aut.parkingsearch.events.SearchClickedEvent
+import com.bme.aut.parkingsearch.model.ParkingSpot
 import com.bme.aut.parkingsearch.model.ToolbarModel
 import com.bme.aut.parkingsearch.ui.activity.MainActivity
 import com.bme.aut.parkingsearch.util.*
@@ -29,9 +31,15 @@ import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.firebase.database.ChildEventListener
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_home.view.*
 import org.greenrobot.eventbus.Subscribe
+import java.io.IOException
+import java.util.*
 
 
 class HomeFragment : BaseFragment() {
@@ -64,6 +72,8 @@ class HomeFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         mapView = view.mapView
         mapView?.onCreate(savedInstanceState)
+
+        initPlaceListener()
     }
 
     override fun onStart() {
@@ -137,18 +147,20 @@ class HomeFragment : BaseFragment() {
 
             checkPermission()
             updateLastLocation()
+
+            refreshMap()
         }
     }
 
     private fun requestData() {
-        /*  viewModel.getParkingSpots{ parkingSpots, error ->
+        viewModel.getParkingSpots{ parkingSpots, error ->
               if(parkingSpots != null){
                   context.toast("Got parkingSpots!")
                   //viewModel.createParkingSpotMarker
               } else {
                   context.toast("Some error occure on map.")
               }
-          }*/
+          }
     }
 
     private fun checkPermission() {
@@ -292,6 +304,47 @@ class HomeFragment : BaseFragment() {
     fun onSearchClickedEvent(event: SearchClickedEvent) {
         viewModel.searchedAddress = getPositionFrom(event.address)
         updateMap(true, viewModel.lastLocation, viewModel.searchedAddress?.getLatLng())
+    }
+
+    /*
+    my implementation of refreshing markers
+     */
+
+
+    fun refreshMap(){
+        val sydney = LatLng(-34.0, 151.0)
+        googleMap?.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
+    }
+
+    fun addPlaces(parkingSpot: ParkingSpot?){
+        val geocoder = Geocoder(activity, Locale.ENGLISH)
+        val addressList:List<Address> = geocoder.getFromLocationName(parkingSpot!!.address, 1)
+        googleMap?.addMarker(MarkerOptions().
+            position(addressList.get(0).getLatLng()).title(addressList.get(0).featureName))
+    }
+
+    private fun initPlaceListener() {
+        FirebaseDatabase.getInstance()
+            .getReference("places")
+            .addChildEventListener(object : ChildEventListener {
+                override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
+                    val addresses = dataSnapshot.getValue<ParkingSpot>(ParkingSpot::class.java)
+                    //postsAdapter.addPost(newPost)
+                    addPlaces(addresses)
+                }
+
+                override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {
+                }
+
+                override fun onChildRemoved(dataSnapshot: DataSnapshot) {
+                }
+
+                override fun onChildMoved(dataSnapshot: DataSnapshot, s: String?) {
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                }
+            })
     }
 
 }
