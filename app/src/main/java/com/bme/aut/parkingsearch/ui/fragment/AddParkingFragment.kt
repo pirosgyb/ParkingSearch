@@ -4,15 +4,22 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import android.location.Address
+import android.location.Geocoder
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import com.bme.aut.parkingsearch.enum.ToolbarType
 import com.bme.aut.parkingsearch.model.ParkingSpot
 import com.bme.aut.parkingsearch.model.ToolbarModel
+import com.bme.aut.parkingsearch.ui.activity.MainActivity
+import com.bme.aut.parkingsearch.util.NavigationManager
 import com.bme.aut.parkingsearch.viewModel.AddParkingViewModel
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -20,15 +27,6 @@ import kotlinx.android.synthetic.main.fragment_add_parking.*
 import java.io.ByteArrayOutputStream
 import java.net.URLEncoder
 import java.util.*
-import android.location.Address
-import android.location.Geocoder
-import android.widget.*
-import com.bme.aut.parkingsearch.ui.activity.MainActivity
-
-
-
-
-
 
 class AddParkingFragment : BaseFragment() {
 
@@ -43,7 +41,11 @@ class AddParkingFragment : BaseFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(com.bme.aut.parkingsearch.R.layout.fragment_add_parking, container, false)
+        return inflater.inflate(
+            com.bme.aut.parkingsearch.R.layout.fragment_add_parking,
+            container,
+            false
+        )
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -78,24 +80,30 @@ class AddParkingFragment : BaseFragment() {
         }
     }
 
-    fun uploadPlace(imageUrl: String? = null) {
-        lateinit var listOfAddress:List<Address>
+    private fun uploadPlace(imageUrl: String? = null) {
+        lateinit var listOfAddress: List<Address>
         val geocoder = Geocoder(activity, Locale.ENGLISH)
         val text = addressEditText.text.toString()
         var isAddressType = false
 
         try {
-            listOfAddress = geocoder.getFromLocationName(text,3)
-            addressEditText.setText(listOfAddress.get(0).featureName)
+            listOfAddress = geocoder.getFromLocationName(text, 3)
+            addressEditText.setText(listOfAddress.get(0).getAddressLine(0))
             isAddressType = true
 
-        } catch (e:Exception){
-            Toast.makeText(activity,"Address is not found",Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            Toast.makeText(activity, "Address is not found", Toast.LENGTH_LONG).show()
         }
 
-        if(isAddressType) {
+        if (isAddressType) {
             val key = FirebaseDatabase.getInstance().reference.child("places").push().key ?: return
-            val newPost = ParkingSpot(listOfAddress.get(0).featureName, imageUrl)
+            val newPost = ParkingSpot(
+                address = listOfAddress[0].getAddressLine(0),
+                displayName = listOfAddress[0].featureName,
+                imageUrl = imageUrl,
+                latitude = listOfAddress[0].latitude,
+                longitude = listOfAddress[0].longitude
+            )
 
             FirebaseDatabase.getInstance().reference
                 .child("places")
@@ -104,11 +112,12 @@ class AddParkingFragment : BaseFragment() {
                 .addOnCompleteListener {
                     (activity as MainActivity).hideProgressDialog()
                     Toast.makeText(activity, "Parking Spot added", Toast.LENGTH_SHORT).show()
+                    NavigationManager.onBackPressed(findNavController())
                 }
         }
     }
 
-    fun uploadPlaceWithImg() {
+    private fun uploadPlaceWithImg() {
         (activity as MainActivity).showProgressDialog()
 
         val bitmap: Bitmap = (imgAttach.drawable as BitmapDrawable).bitmap

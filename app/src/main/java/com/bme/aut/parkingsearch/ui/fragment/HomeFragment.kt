@@ -5,7 +5,6 @@ import android.location.Address
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,8 +37,6 @@ import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_home.view.*
 import org.greenrobot.eventbus.Subscribe
-import java.io.IOException
-import java.util.*
 
 
 class HomeFragment : BaseFragment() {
@@ -142,25 +139,24 @@ class HomeFragment : BaseFragment() {
         mapView?.getMapAsync { googleMap ->
             this.googleMap = googleMap
             MapsInitializer.initialize(context)
-            requestData()
             googleMap?.uiSettings?.isMyLocationButtonEnabled = true
 
             checkPermission()
             updateLastLocation()
 
-            refreshMap()
+            googleMap.setOnInfoWindowClickListener { marker ->
+                val parkingSpot = viewModel.getParkingSpotByLatLng(
+                    latitude = marker.position.latitude,
+                    longitude = marker.position.longitude
+                )
+                parkingSpot?.let { spot ->
+                    NavigationManager.navigateToDetails(
+                        spot,
+                        findNavController()
+                    )
+                }
+            }
         }
-    }
-
-    private fun requestData() {
-        viewModel.getParkingSpots{ parkingSpots, error ->
-              if(parkingSpots != null){
-                  context.toast("Got parkingSpots!")
-                  //viewModel.createParkingSpotMarker
-              } else {
-                  context.toast("Some error occure on map.")
-              }
-          }
     }
 
     private fun checkPermission() {
@@ -229,7 +225,13 @@ class HomeFragment : BaseFragment() {
         googleMap?.clear()
 
         currentPosition?.toLatLng()
-            ?.let { placeMarkerOnMap(it, "Current position", MarkerType.CURRENT_POSITION) }
+            ?.let {
+                placeMarkerOnMap(
+                    it,
+                    getString(R.string.currentPosition),
+                    MarkerType.CURRENT_POSITION
+                )
+            }
         viewModel.searchedAddress?.let {
             placeMarkerOnMap(
                 it.getLatLng(),
@@ -256,6 +258,13 @@ class HomeFragment : BaseFragment() {
             }
         }
 
+        viewModel.parkingSpots?.forEach {
+            placeMarkerOnMap(
+                position = LatLng(it.latitude, it.longitude),
+                markerName = it.displayName ?: "",
+                markerType = MarkerType.PARKING_SPOT
+            )
+        }
     }
 
     private fun placeMarkerOnMap(position: LatLng, markerName: String, markerType: MarkerType) {
@@ -295,32 +304,34 @@ class HomeFragment : BaseFragment() {
         return if (addresses.isNotEmpty()) {
             addresses[0]
         } else {
-            context.toast("Not found this address: $address")
             null
         }
     }
 
     @Subscribe
     fun onSearchClickedEvent(event: SearchClickedEvent) {
-        viewModel.searchedAddress = getPositionFrom(event.address)
-        updateMap(true, viewModel.lastLocation, viewModel.searchedAddress?.getLatLng())
+        val searchedAddress = getPositionFrom(event.address)
+        if (searchedAddress != null) {
+            viewModel.searchedAddress = searchedAddress
+            updateMap(true, viewModel.lastLocation, viewModel.searchedAddress?.getLatLng())
+        } else {
+            context.toast("Not found this address: ${event.address}")
+        }
+
     }
 
-    /*
-    my implementation of refreshing markers
-     */
+    fun addPlaces(parkingSpot: ParkingSpot?) {
 
+        parkingSpot?.let {
+            viewModel.parkingSpots.add(it)
 
-    fun refreshMap(){
-        val sydney = LatLng(-34.0, 151.0)
-        googleMap?.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-    }
+            placeMarkerOnMap(
+                position = LatLng(it.latitude, it.longitude),
+                markerName = it.displayName ?: "",
+                markerType = MarkerType.PARKING_SPOT
+            )
 
-    fun addPlaces(parkingSpot: ParkingSpot?){
-        val geocoder = Geocoder(activity, Locale.ENGLISH)
-        val addressList:List<Address> = geocoder.getFromLocationName(parkingSpot!!.address, 1)
-        googleMap?.addMarker(MarkerOptions().
-            position(addressList.get(0).getLatLng()).title(addressList.get(0).featureName))
+        }
     }
 
     private fun initPlaceListener() {

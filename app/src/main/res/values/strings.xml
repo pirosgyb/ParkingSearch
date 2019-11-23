@@ -5,4 +5,5 @@
     <string name="newParkingPhotosText">Photo:</string>
     <string name="cameraButtonText">Take a picture</string>
     <string name="send_picture">Send</string>
+    <string name="currentPosition">Current position</string>
 </resources>
