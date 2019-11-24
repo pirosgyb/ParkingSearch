@@ -5,7 +5,9 @@ import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import com.bme.aut.parkingsearch.R
+import com.bme.aut.parkingsearch.model.ParkingSpot
 import com.bme.aut.parkingsearch.ui.fragment.AddParkingFragment
+import com.bme.aut.parkingsearch.ui.fragment.ParkingDetailsFragment
 
 object NavigationManager {
 
@@ -22,7 +24,9 @@ object NavigationManager {
         navController.navigate(R.id.addParkingFragment, bundle, transitions)
     }
 
-    fun navigateToDetails(navController: NavController) {
+    fun navigateToDetails(parkingSpot: ParkingSpot, navController: NavController) {
+        val bundle = bundleOf(ParkingDetailsFragment.ARG_KEY to parkingSpot)
+
         val transitions = NavOptions.Builder()
             .setEnterAnim(R.anim.enter_from_right)
             .setExitAnim(R.anim.exit_to_left)
@@ -30,7 +34,7 @@ object NavigationManager {
             .setPopExitAnim(R.anim.exit_to_right)
             .build()
 
-        navController.navigate(R.id.parkingDetailsFragment, null, transitions)
+        navController.navigate(R.id.parkingDetailsFragment, bundle, transitions)
     }
 
     fun navigateToHome(navController: NavController) {
@@ -42,6 +46,10 @@ object NavigationManager {
             .build()
 
         navController.navigate(R.id.homeFragment, null, transitions)
+    }
+
+    fun onBackPressed(navController: NavController) {
+        navController.popBackStack()
     }
 
 }

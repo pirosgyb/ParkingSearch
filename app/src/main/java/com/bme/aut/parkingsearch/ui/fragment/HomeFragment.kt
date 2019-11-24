@@ -15,6 +15,7 @@ import com.bme.aut.parkingsearch.R
 import com.bme.aut.parkingsearch.enum.MarkerType
 import com.bme.aut.parkingsearch.enum.ToolbarType
 import com.bme.aut.parkingsearch.events.SearchClickedEvent
+import com.bme.aut.parkingsearch.model.ParkingSpot
 import com.bme.aut.parkingsearch.model.ToolbarModel
 import com.bme.aut.parkingsearch.ui.activity.MainActivity
 import com.bme.aut.parkingsearch.util.*
@@ -29,6 +30,10 @@ import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.firebase.database.ChildEventListener
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_home.view.*
 import org.greenrobot.eventbus.Subscribe
@@ -64,6 +69,8 @@ class HomeFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         mapView = view.mapView
         mapView?.onCreate(savedInstanceState)
+
+        initPlaceListener()
     }
 
     override fun onStart() {
@@ -132,23 +139,24 @@ class HomeFragment : BaseFragment() {
         mapView?.getMapAsync { googleMap ->
             this.googleMap = googleMap
             MapsInitializer.initialize(context)
-            requestData()
             googleMap?.uiSettings?.isMyLocationButtonEnabled = true
 
             checkPermission()
             updateLastLocation()
-        }
-    }
 
-    private fun requestData() {
-        /*  viewModel.getParkingSpots{ parkingSpots, error ->
-              if(parkingSpots != null){
-                  context.toast("Got parkingSpots!")
-                  //viewModel.createParkingSpotMarker
-              } else {
-                  context.toast("Some error occure on map.")
-              }
-          }*/
+            googleMap.setOnInfoWindowClickListener { marker ->
+                val parkingSpot = viewModel.getParkingSpotByLatLng(
+                    latitude = marker.position.latitude,
+                    longitude = marker.position.longitude
+                )
+                parkingSpot?.let { spot ->
+                    NavigationManager.navigateToDetails(
+                        spot,
+                        findNavController()
+                    )
+                }
+            }
+        }
     }
 
     private fun checkPermission() {
@@ -217,7 +225,13 @@ class HomeFragment : BaseFragment() {
         googleMap?.clear()
 
         currentPosition?.toLatLng()
-            ?.let { placeMarkerOnMap(it, "Current position", MarkerType.CURRENT_POSITION) }
+            ?.let {
+                placeMarkerOnMap(
+                    it,
+                    getString(R.string.currentPosition),
+                    MarkerType.CURRENT_POSITION
+                )
+            }
         viewModel.searchedAddress?.let {
             placeMarkerOnMap(
                 it.getLatLng(),
@@ -244,6 +258,13 @@ class HomeFragment : BaseFragment() {
             }
         }
 
+        viewModel.parkingSpots?.forEach {
+            placeMarkerOnMap(
+                position = LatLng(it.latitude, it.longitude),
+                markerName = it.displayName ?: "",
+                markerType = MarkerType.PARKING_SPOT
+            )
+        }
     }
 
     private fun placeMarkerOnMap(position: LatLng, markerName: String, markerType: MarkerType) {
@@ -283,15 +304,58 @@ class HomeFragment : BaseFragment() {
         return if (addresses.isNotEmpty()) {
             addresses[0]
         } else {
-            context.toast("Not found this address: $address")
             null
         }
     }
 
     @Subscribe
     fun onSearchClickedEvent(event: SearchClickedEvent) {
-        viewModel.searchedAddress = getPositionFrom(event.address)
-        updateMap(true, viewModel.lastLocation, viewModel.searchedAddress?.getLatLng())
+        val searchedAddress = getPositionFrom(event.address)
+        if (searchedAddress != null) {
+            viewModel.searchedAddress = searchedAddress
+            updateMap(true, viewModel.lastLocation, viewModel.searchedAddress?.getLatLng())
+        } else {
+            context.toast("Not found this address: ${event.address}")
+        }
+
+    }
+
+    fun addPlaces(parkingSpot: ParkingSpot?) {
+
+        parkingSpot?.let {
+            viewModel.parkingSpots.add(it)
+
+            placeMarkerOnMap(
+                position = LatLng(it.latitude, it.longitude),
+                markerName = it.displayName ?: "",
+                markerType = MarkerType.PARKING_SPOT
+            )
+
+        }
+    }
+
+    private fun initPlaceListener() {
+        FirebaseDatabase.getInstance()
+            .getReference("places")
+            .addChildEventListener(object : ChildEventListener {
+                override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
+                    val addresses = dataSnapshot.getValue<ParkingSpot>(ParkingSpot::class.java)
+                    //postsAdapter.addPost(newPost)
+                    addPlaces(addresses)
+                }
+
+                override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {
+                }
+
+                override fun onChildRemoved(dataSnapshot: DataSnapshot) {
+                }
+
+                override fun onChildMoved(dataSnapshot: DataSnapshot, s: String?) {
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                }
+            })
     }
 
 }
